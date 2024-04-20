@@ -1,6 +1,7 @@
 # Based on https://github.com/tensorflow/examples/blob/master/lite/examples/object_detection/raspberry_pi/README.md
 import re
 import cv2
+import time
 from tflite_runtime.interpreter import Interpreter
 import numpy as np
 
@@ -39,10 +40,10 @@ def detect_objects(interpreter, image, threshold):
   set_input_tensor(interpreter, image)
   interpreter.invoke()
   # Get all output details
-  boxes = get_output_tensor(interpreter, 0)
-  classes = get_output_tensor(interpreter, 1)
-  scores = get_output_tensor(interpreter, 2)
-  count = int(get_output_tensor(interpreter, 3))
+  boxes = get_output_tensor(interpreter, 1)
+  classes = get_output_tensor(interpreter, 3)
+  scores = get_output_tensor(interpreter, 0)
+  count = int(get_output_tensor(interpreter, 2))
 
   results = []
   for i in range(count):
@@ -65,8 +66,8 @@ def main():
     while cap.isOpened():
         ret, frame = cap.read()
         img = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), (320,320))
-        res = detect_objects(interpreter, img, 0.8)
-        print(res)
+        res = detect_objects(interpreter, img, 0.65)
+        #print(res)
 
         for result in res:
             ymin, xmin, ymax, xmax = result['bounding_box']
